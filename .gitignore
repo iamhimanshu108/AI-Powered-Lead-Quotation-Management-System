@@ -1,0 +1,12 @@
+node_modules
+.env
+.env.*
+!.env.example
+.DS_Store
+coverage
+apps/frontend/dist
+apps/backend/logs
+__pycache__
+.pytest_cache
+.venv
+*.pyc

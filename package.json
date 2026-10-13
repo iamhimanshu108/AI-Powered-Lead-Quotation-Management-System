@@ -1,0 +1,15 @@
+{
+  "name": "ai-powered-lead-quotation-management-system",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev:backend": "npm --workspace apps/backend run dev",
+    "dev:frontend": "npm --workspace apps/frontend run dev",
+    "dev:ai": "cd apps/ai-service && uvicorn app.main:app --reload --host 0.0.0.0 --port 8001",
+    "test:backend": "npm --workspace apps/backend test",
+    "lint:backend": "npm --workspace apps/backend run lint"
+  }
+}
