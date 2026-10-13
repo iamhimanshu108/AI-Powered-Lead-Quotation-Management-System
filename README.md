@@ -58,6 +58,10 @@ cd apps/ai-service && python -m venv .venv && source .venv/bin/activate && pip i
 
 The frontend is available at http://localhost:5173, the backend at http://localhost:4000, and the AI service at http://localhost:8001.
 
+On backend startup, the server verifies the database connection, applies the idempotent
+initial schema migration, seeds the default organization when needed, and then starts
+listening for requests.
+
 ## Required environment variables
 
 See [.env.example](.env.example) for the default values.
@@ -71,12 +75,40 @@ See [.env.example](.env.example) for the default values.
 - DB_NAME
 - DB_USER
 - DB_PASSWORD
+- DATABASE_URL
 - REDIS_URL
 - FRONTEND_URL
 - AI_SERVICE_URL
 - LLM_API_KEY
 - LLM_MODEL
 - LOG_LEVEL
+
+For local PostgreSQL, keep `DATABASE_URL` empty and configure `DB_HOST`, `DB_PORT`,
+`DB_NAME`, `DB_USER`, and `DB_PASSWORD`. To use Neon instead, set `DATABASE_URL` to
+the connection string from Neon (including `sslmode=require`); it takes precedence
+over the individual `DB_*` settings.
+
+## Workspace management API
+
+All management endpoints require a valid bearer token from `POST /api/auth/login`.
+Data is scoped to the signed-in user's organization. Organization edits and user
+administration require the `admin` role.
+
+| Method | Endpoint | Purpose |
+| --- | --- | --- |
+| `GET` | `/api/dashboard` | Live lead and team summary metrics |
+| `GET`, `PATCH` | `/api/organization` | View or update organization name and slug |
+| `GET` | `/api/users` | List organization teammates (admin sees account details) |
+| `POST` | `/api/users` | Create a teammate with a hashed password (admin only) |
+| `PATCH` | `/api/users/:id` | Update teammate name/email or active status (admin only) |
+| `GET`, `POST` | `/api/leads` | List/search or create leads |
+| `PATCH` | `/api/leads/:id` | Update lead details and pipeline status |
+| `GET`, `POST` | `/api/leads/:id/activities` | View or add lead activity notes |
+
+The dashboard now uses these APIs for organization details, team administration,
+lead creation and updates, assignment, search, activity history, and live metrics.
+Quotations are not implemented yet because the current database migration does not
+create quotation tables.
 
 ## Milestone 1: repository setup, PostgreSQL schema, authentication, and application layout
 
